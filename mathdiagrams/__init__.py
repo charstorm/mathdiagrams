@@ -2,7 +2,7 @@
 This file contains the common utilities related to making mathematical diagrams.
 """
 
-# from abc import ABC, abstractmethod
+import math
 from typing import Callable
 
 import cairo
@@ -10,6 +10,15 @@ from cairo import Context
 
 Point = tuple[float, float]
 Shape = tuple[float, float]
+
+
+def d2r(angle: float) -> float:
+    """Degree to radian"""
+    return angle * math.pi / 180
+
+
+def polar2xy(angle: float, radius: float = 1.0) -> Point:
+    return (radius * math.cos(angle), radius * math.sin(angle))
 
 
 def parse_hex_color(hexcode: str) -> list[float]:
@@ -129,6 +138,7 @@ def multi_text(ctx: Context, text_list: list[str], start: Point, shift: Point) -
         position = (x0 + shift_x * idx, y0 + shift_y * idx)
         ctx.move_to(*position)
         ctx.show_text(text)
+        ctx.stroke()
 
 
 def get_markers(start: int, end: int, scale: float) -> list[str]:
@@ -180,6 +190,7 @@ def print_markers(
     multi_text(
         ctx, ymarkers2, (midx + a1, midy + grid_size + font_size + a4), (0, grid_size)
     )
+    ctx.stroke()
 
 
 def apply_grid(
@@ -242,3 +253,36 @@ def apply_grid(
         ctx.set_line_width(1 / scale)
 
     return ctx
+
+
+def circle(ctx: Context, center: Point, radius: float, fill: bool = False) -> None:
+    x, y = center
+    ctx.arc(x, y, radius, 0, d2r(360))
+    if fill:
+        ctx.fill()
+    else:
+        ctx.stroke()
+
+
+def add_vec(p1: Point, p2: Point, scale: float = 1):
+    x = p1[0] + p2[0] * scale
+    y = p1[1] + p2[1] * scale
+    return (x, y)
+
+
+def marker(
+    ctx: Context,
+    position: Point,
+    text: str,
+    angle: float = 2,
+    shift: float = 0.02,
+    radius: float = 0.01,
+) -> None:
+    circle(ctx, position, radius, True)
+    text_position = add_vec(position, polar2xy(angle, shift))
+    print(text_position, text)
+    ctx.move_to(*position)
+    ctx.scale(10, 10)
+    scale_line_width(ctx, 1/100)
+    ctx.show_text(text)
+    ctx.stroke()
