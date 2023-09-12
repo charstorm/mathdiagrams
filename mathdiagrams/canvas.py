@@ -130,3 +130,4 @@ class Canvas:
         self.draw_main_axis_pairs(ctx)
         ticks = self.draw_grid_lines(ctx)
         self.draw_markers(ctx, ticks)
+        ctx.restore()

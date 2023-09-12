@@ -83,3 +83,35 @@ class NaturalContext:
         canvas = Canvas(config, config_internal)
         canvas.draw(self.ctx)
         return self
+
+    def text(
+        self,
+        position: complex,
+        text: str,
+        h_align: str = "left",
+        v_align: str = "bottom",
+    ) -> Self:
+        ext = self.ctx.text_extents(text)
+        scale = self.scale
+        if h_align == "left":
+            pass  # default
+        elif h_align in ("mid", "middle", "center"):
+            position += complex(-ext.width / 2 / scale, 0)
+        elif h_align == "right":
+            position += complex(-ext.width / scale, 0)
+        else:
+            raise ValueError(f"Unknown {h_align=}")
+
+        if v_align == "bottom":
+            pass  # default
+        elif v_align in ("mid", "middle", "center"):
+            position += complex(0, -ext.height / 2 / scale)
+        elif v_align == "top":
+            position += complex(0, -ext.height / scale)
+        else:
+            raise ValueError(f"Unknown {v_align=}")
+
+        self.move_to(position)
+        self.ctx.show_text(text)
+        self.ctx.stroke()
+        return self
