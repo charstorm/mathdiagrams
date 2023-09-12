@@ -283,6 +283,6 @@ def marker(
     print(text_position, text)
     ctx.move_to(*position)
     ctx.scale(10, 10)
-    scale_line_width(ctx, 1/100)
+    scale_line_width(ctx, 1 / 100)
     ctx.show_text(text)
     ctx.stroke()
