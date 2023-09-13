@@ -11,6 +11,7 @@ from .canvas import CanvasConfig, CanvasConfigInternal, Canvas
 class NaturalContextState:
     center: complex
     scale: float
+    dot_size: float
 
 
 @dataclass
@@ -25,7 +26,7 @@ class NaturalContext:
     """
 
     def __init__(
-        self, ctx: Context, scale: float, shape: complex, center: complex | None = None
+        self, ctx: Context, shape: complex, scale: float, center: complex | None = None
     ) -> None:
         self.ctx = ctx
         self.scale = scale
@@ -34,6 +35,7 @@ class NaturalContext:
         if center is None:
             center = shape / 2
         self.center = center
+        self.dot_size = 0.015
 
         self.limits = CanvasLimits(-center / scale, (shape - center) / scale)
         self.history: list[NaturalContextState] = []
@@ -54,6 +56,10 @@ class NaturalContext:
         utils.set_color(self.ctx, color)
         return self
 
+    def set_line_width(self, width: float) -> Self:
+        self.ctx.set_line_width(width)
+        return self
+
     def stroke(self) -> Self:
         self.ctx.stroke()
         return self
@@ -71,7 +77,7 @@ class NaturalContext:
     def arc(self, center: complex, radius: float, angle1: float, angle2: float) -> Self:
         x, y = self.convert(center)
         radius = radius * self.scale
-        self.ctx.arc(x, y, radius, angle1, angle2)
+        self.ctx.arc(x, y, radius, -angle2, -angle1)
         return self
 
     def circle(self, center: complex, radius: float) -> Self:
@@ -114,4 +120,30 @@ class NaturalContext:
         self.move_to(position)
         self.ctx.show_text(text)
         self.ctx.stroke()
+        return self
+
+    def mark_dot(self, position: complex, text: str = "", shift: complex = 0j) -> Self:
+        self.circle(position, self.dot_size).fill()
+        position += shift
+        if text:
+            h_align = "left" if shift.real >= 0 else "right"
+            v_align = "bottom" if shift.imag >= 0 else "top"
+            self.text(position, text, h_align=h_align, v_align=v_align)
+        return self
+
+    def mark_angle(
+        self,
+        center: complex,
+        radius: float,
+        angle1: float,
+        angle2: float,
+        text: str,
+        extend: float = 0.01,
+        turn: float = 0,
+    ) -> Self:
+        self.arc(center, radius, angle1, angle2)
+        self.stroke()
+        angle_avg = (angle1 + angle2) / 2
+        shift = utils.p2z(radius + extend, angle_avg + turn)
+        self.text(center + shift, text)
         return self
