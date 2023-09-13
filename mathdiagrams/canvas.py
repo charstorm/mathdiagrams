@@ -14,7 +14,7 @@ XYTicks = tuple[list[PointWithMarker], list[PointWithMarker]]
 @dataclass
 class CanvasConfig:
     background_color: str = "#111"
-    grid_step: float = 0.2
+    grid_step: float = 0.5
     axis_color: str = "#323232"
     grid_color: str = "#222"
     font_size: int = 12
