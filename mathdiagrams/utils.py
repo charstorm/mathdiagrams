@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from cairo import Context
 
 
@@ -46,3 +47,8 @@ def set_color(ctx: Context, color: str) -> None:
 def d2r(angle: float) -> float:
     """Degree to radian"""
     return angle * math.pi / 180
+
+
+def p2z(r: float, theta: float) -> complex:
+    """Polar to complex"""
+    return r * np.exp(1j * theta)

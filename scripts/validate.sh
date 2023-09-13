@@ -1,5 +1,5 @@
 set -ex
-src="mathdiagrams"
+src="mathdiagrams examples"
 black $src
 flake8 $src
 mypy $src
