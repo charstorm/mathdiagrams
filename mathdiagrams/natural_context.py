@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
+import cairo
 from cairo import Context
 
 from . import utils
@@ -29,6 +30,7 @@ class NaturalContext:
         self, ctx: Context, shape: complex, scale: float, center: complex | None = None
     ) -> None:
         self.ctx = ctx
+        self.ctx.set_line_cap(cairo.LINE_CAP_ROUND)
         self.scale = scale
         self.shape = shape
 
