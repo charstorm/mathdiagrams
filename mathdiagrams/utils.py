@@ -52,3 +52,30 @@ def d2r(angle: float) -> float:
 def p2z(r: float, theta: float) -> complex:
     """Polar to complex"""
     return r * np.exp(1j * theta)
+
+
+def dot_product(v1: complex, v2: complex) -> float:
+    return v1.real * v2.real + v1.imag * v2.imag
+
+
+def drop_perpendicular(p1: complex, p2: complex, p3: complex) -> complex:
+    """
+    Drop a perpendicular from p3 to line formed by p1 and p2. Return the meeting point.
+    """
+    # Shift co-ordinates to p1.
+    sp2 = p2 - p1
+    sp3 = p3 - p1
+
+    # Find the unit vector along sp2
+    u = sp2 / abs(sp2)
+
+    # Project external point (sp3) onto the unit vector
+    proj = dot_product(sp3, u)
+
+    # Find the meeting point
+    meet = proj * u
+
+    # Shift the point back
+    ret = p1 + meet
+
+    return ret
